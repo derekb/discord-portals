@@ -32,7 +32,10 @@
     "trailingComma": "es5"
   },
   "name": "discord-portals",
-  "author": "derekb",
+  "author": {
+    "name": "Derek Burkgren",
+    "email": "derek.burkgren@gmail.com"
+  },
   "module": "dist/discord-portals.esm.js",
   "size-limit": [
     {
