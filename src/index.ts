@@ -63,3 +63,66 @@ export class SimplePortalOpener implements PortalOpener {
       this.emojis = emojis;
   }
 }
+
+export class CardPortalOpener implements PortalOpener {
+    private readonly emojis: EmojiProvider;
+
+    async open(portal: Portal): Promise<void> {
+        let outEmbed = this.getPortalEmbed(portal, "out");
+        let inEmbed = this.getPortalEmbed(portal, "in");
+
+        let portalToMessage = await portal.to.send({ embeds: [ inEmbed ]})
+        let portalFromMessage = await portal.from.send({ embeds: [ outEmbed ]})
+
+        let linkedInEmbed = this.updatePortalEmbed(portalFromMessage, inEmbed)
+        let linkedOutEmbed = this.updatePortalEmbed(portalToMessage, outEmbed)
+
+        portalToMessage.edit({ embeds: [ linkedInEmbed ]})
+        portalFromMessage.edit({ embeds: [ linkedOutEmbed ]})
+        
+        return
+    }
+
+    getPortalEmbed(portal: Portal, direction: 'in' | 'out' = 'in') : MessageEmbedOptions {
+      const values = {
+        in: {
+          title: 'A portal has opened from... somewhere!',
+          description: ` ${portal.from.toString()} 💨 ${this.emojis.getByName("portalin")?.toString()}`,
+          // Blue-ish
+          color: 3911167
+        },
+    
+        out: {
+          title: 'A portal has opened to... somewhere!',
+          description: `${this.emojis.getByName("portalout")?.toString()} ${portal.to.toString()} 💨 `,
+          // Orange-ish
+          color: 16756795
+        }
+      };
+    
+      const embed : MessageEmbedOptions = {
+        title: values[direction].title,
+        description: values[direction].description,
+        color: values[direction].color, 
+        timestamp: new Date(),
+        footer: {
+          icon_url: portal.invoker.user.avatarURL({ dynamic: true })!,
+          text: `Portal opened by ${portal.invoker.displayName}`
+        },
+        // thumbnail: {
+        //   url: 'https://onlyportals.com/hotportalsinyourarea/portal.jpg'
+        // }
+      };
+
+      return embed;
+    }
+
+    private updatePortalEmbed(pointTo: Message, originalEmbed: MessageEmbedOptions) : MessageEmbedOptions {
+      originalEmbed.url = pointTo.url
+      return originalEmbed
+    }
+
+    constructor(emojis: EmojiProvider) {
+        this.emojis = emojis;
+    }
+}
