@@ -10,6 +10,7 @@ import { DiscordEmojiProvider, EmojiProvider } from './discord/emoji';
 
 export interface Portal {
   invoker: GuildMember;
+  originalMessage: Message;
   to: TextChannel;
   from: TextChannel;
 }
@@ -43,6 +44,7 @@ export function createPortal(msg: Message, client: Client): Portal | null {
   const portal: Portal = {
     to: destChan,
     from: originChan as TextChannel,
+    originalMessage: msg,
     invoker: invoker!,
   };
 
@@ -79,23 +81,18 @@ export class CardPortalOpener implements PortalOpener {
   private readonly emojis: EmojiProvider;
 
   async open(portal: Portal): Promise<void> {
-    let outEmbed = this.getPortalEmbed(portal, 'out');
-    let inEmbed = this.getPortalEmbed(portal, 'in');
-
+    let inEmbed = this.getPortalEmbed(portal, portal.originalMessage, 'in');
     let portalToMessage = await portal.to.send({ embeds: [inEmbed] });
-    let portalFromMessage = await portal.from.send({ embeds: [outEmbed] });
 
-    let linkedInEmbed = this.updatePortalEmbed(portalFromMessage, inEmbed);
-    let linkedOutEmbed = this.updatePortalEmbed(portalToMessage, outEmbed);
-
-    portalToMessage.edit({ embeds: [linkedInEmbed] });
-    portalFromMessage.edit({ embeds: [linkedOutEmbed] });
+    let outEmbed = this.getPortalEmbed(portal, portalToMessage, 'out');
+    await portal.from.send({ embeds: [outEmbed] });
 
     return;
   }
 
   getPortalEmbed(
     portal: Portal,
+    linkTo: Message,
     direction: 'in' | 'out' = 'in'
   ): MessageEmbedOptions {
     const values = {
@@ -120,6 +117,7 @@ export class CardPortalOpener implements PortalOpener {
 
     const embed: MessageEmbedOptions = {
       title: values[direction].title,
+      url: linkTo.url,
       description: values[direction].description,
       color: values[direction].color,
       timestamp: new Date(),
@@ -133,14 +131,6 @@ export class CardPortalOpener implements PortalOpener {
     };
 
     return embed;
-  }
-
-  private updatePortalEmbed(
-    pointTo: Message,
-    originalEmbed: MessageEmbedOptions
-  ): MessageEmbedOptions {
-    originalEmbed.url = pointTo.url;
-    return originalEmbed;
   }
 
   constructor(client: Client) {
