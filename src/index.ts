@@ -6,7 +6,7 @@ import {
   Channel,
   MessageEmbedOptions,
 } from 'discord.js';
-import { EmojiProvider } from './discord/emoji';
+import { DiscordEmojiProvider, EmojiProvider } from './discord/emoji';
 
 export interface Portal {
   invoker: GuildMember;
@@ -70,8 +70,8 @@ export class SimplePortalOpener implements PortalOpener {
     return;
   }
 
-  constructor(emojis: EmojiProvider) {
-    this.emojis = emojis;
+  constructor(client: Client) {
+    this.emojis = DiscordEmojiProvider.from(client);
   }
 }
 
@@ -143,7 +143,7 @@ export class CardPortalOpener implements PortalOpener {
     return originalEmbed;
   }
 
-  constructor(emojis: EmojiProvider) {
-    this.emojis = emojis;
+  constructor(client: Client) {
+    this.emojis = DiscordEmojiProvider.from(client);
   }
 }
