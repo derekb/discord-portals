@@ -95,21 +95,21 @@ export class CardPortalOpener implements PortalOpener {
     linkTo: Message,
     direction: 'in' | 'out' = 'in'
   ): MessageEmbedOptions {
+    const emojiString = (name: string) => {
+      return this.emojis.getByName(name)?.toString()!
+    }
+
     const values = {
       in: {
         title: 'A portal has opened from... somewhere!',
-        description: ` ${portal.from.toString()} 💨 ${this.emojis
-          .getByName('portalin')
-          ?.toString()}`,
+        description: `${emojiString('portalin')} => ${portal.from.toString()}`,
         // Blue-ish
         color: 3911167,
       },
 
       out: {
         title: 'A portal has opened to... somewhere!',
-        description: `${this.emojis
-          .getByName('portalout')
-          ?.toString()} ${portal.to.toString()} 💨 `,
+        description: `${emojiString('portalout')} <= ${portal.to.toString()}`,
         // Orange-ish
         color: 16756795,
       },
