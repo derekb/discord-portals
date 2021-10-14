@@ -16,11 +16,13 @@ To return to the original channel, click the **"A portal has opened from... some
 
 ## Usage
 ```typescript
-// Derive the portal details from the message being responded to. Expects the message to contain a text channel reference.
+// Derive the portal details from the message being responded to. 
+// Expects the message to contain a text channel reference.
 let portal = portals.createPortal(msg, client)
 
 if (portal != null) {
-  // "Opens" the portal between two channels by creating Discord cards in each channel that link to each other.
+  // "Opens" the portal between two channels by creating Discord 
+  // cards in each channel that link to each other.
   let opener = new portals.CardPortalOpener(client)
   await opener.open(portal)
 }
