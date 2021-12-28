@@ -96,8 +96,8 @@ export class CardPortalOpener implements PortalOpener {
     direction: 'in' | 'out' = 'in'
   ): MessageEmbedOptions {
     const emojiString = (name: string) => {
-      return this.emojis.getByName(name)?.toString()!
-    }
+      return this.emojis.getByName(name)?.toString()!;
+    };
 
     const values = {
       in: {
